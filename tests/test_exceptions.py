@@ -39,6 +39,16 @@ def test_negative_withdraw(viz):
         viz.withdraw_vesting(-10, account="alice")
 
 
+def test_negative_delegate_vesting_shares(viz):
+    with pytest.raises(UnhandledRPCError, match='vesting_shares.amount >= 0: Delegation cannot be negative'):
+        viz.delegate_vesting_shares(delegator='alice', delegatee='bob', amount=-10)
+
+
+def test_self_delegate_vesting_shares(viz, default_account):
+    with pytest.raises(UnhandledRPCError, match='delegator != delegatee: You cannot delegate SHARES to yourself'):
+        viz.delegate_vesting_shares(delegator=default_account, delegatee=default_account, amount=10)
+
+
 def test_too_much_beneficiaries(viz, default_account):
     beneficiaries = [{"account": default_account, "weight": 50}] * 256
 
